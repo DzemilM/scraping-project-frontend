@@ -27,13 +27,35 @@
 
 // TODO 1 — Grab the elements
 // Get a reference to every element you'll need from the table above.
+const signInForm = document.getElementById("signin-form");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const emailError = document.getElementById("email-error");
+const passwordError = document.getElementById("password-error");
+const togglePassword = document.getElementById("toggle-password");
+const capsHint = document.getElementById("caps-hint");
+const formAlert = document.getElementById("form-alert");
+const formAlertMessage = document.getElementById("form-alert-message");
+const submitButton = document.getElementById("submit-btn");
+const rememberCheckbox = document.getElementById("remember");
+const themeToggle = document.getElementById("theme-toggle");
 
-
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // TODO 2 — Show / hide password
 // Clicking the eye button switches the password between hidden and visible.
 // Keep aria-pressed and aria-label in sync with the current state.
-
+togglePassword.addEventListener("click",()=>{
+    if(passwordInput.type === "password"){
+        passwordInput.type = "text";
+        togglePassword.ariaPressed = "true";
+        togglePassword.ariaLabel = "Hide password";
+    } else {
+        passwordInput.type = "password";
+        togglePassword.ariaPressed = "false";
+        togglePassword.ariaLabel = "Show password";
+    }
+});
 
 
 // TODO 3 — Validation rules
@@ -41,14 +63,46 @@
 // Each returns an error message string, or "" if the value is fine.
 //   Email:    required, and must look like an email
 //   Password: required, at least 8 characters
+function validateEmail(value){
+    const trimmedVal = value.trim();
 
+    if(trimmedVal.length === 0){
+        return "Email is required";
+    } else if(!EMAIL_PATTERN.test(trimmedVal)){
+        return "Invalid email";
+    } else {
+        return "";
+    }
+}
 
+function validatePassword(value){
+    if(value.length === 0){
+        return "Password is required";
+    } else if (value.length < 8) {
+        return "Password needs to have at least 8 characters";
+    } else {
+        return "";
+    }
+}
 
 // TODO 4 — Show / clear a field error
 // Write showFieldError(input, message) and clearFieldError(input).
 // They update the input's .field wrapper, its error <p>, and aria-invalid on the input.
+function showFieldError(input, message){
+    const field = input.closest(".field");
+    field.classList.add("is-invalid");
+    const textP = field.querySelector(".field__error");
+    textP.textContent = message;
+    input.ariaInvalid = "true";
+}
 
-
+function clearFieldError(input){
+    const field = input.closest(".field");
+    field.classList.remove("is-invalid");
+    const textP = field.querySelector(".field__error");
+    textP.textContent = "";
+    input.ariaInvalid = "false";
+}
 
 // TODO 5 — Validate as the user interacts
 // Check a field when the user leaves it (not on every keystroke).
