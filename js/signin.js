@@ -45,8 +45,8 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // TODO 2 — Show / hide password
 // Clicking the eye button switches the password between hidden and visible.
 // Keep aria-pressed and aria-label in sync with the current state.
-togglePassword.addEventListener("click",()=>{
-    if(passwordInput.type === "password"){
+togglePassword.addEventListener("click", () => {
+    if (passwordInput.type === "password") {
         passwordInput.type = "text";
         togglePassword.ariaPressed = "true";
         togglePassword.ariaLabel = "Hide password";
@@ -63,20 +63,20 @@ togglePassword.addEventListener("click",()=>{
 // Each returns an error message string, or "" if the value is fine.
 //   Email:    required, and must look like an email
 //   Password: required, at least 8 characters
-function validateEmail(value){
+function validateEmail(value) {
     const trimmedVal = value.trim();
 
-    if(trimmedVal.length === 0){
+    if (trimmedVal.length === 0) {
         return "Email is required";
-    } else if(!EMAIL_PATTERN.test(trimmedVal)){
+    } else if (!EMAIL_PATTERN.test(trimmedVal)) {
         return "Invalid email";
     } else {
         return "";
     }
 }
 
-function validatePassword(value){
-    if(value.length === 0){
+function validatePassword(value) {
+    if (value.length === 0) {
         return "Password is required";
     } else if (value.length < 8) {
         return "Password needs to have at least 8 characters";
@@ -88,7 +88,7 @@ function validatePassword(value){
 // TODO 4 — Show / clear a field error
 // Write showFieldError(input, message) and clearFieldError(input).
 // They update the input's .field wrapper, its error <p>, and aria-invalid on the input.
-function showFieldError(input, message){
+function showFieldError(input, message) {
     const field = input.closest(".field");
     field.classList.add("is-invalid");
     const textP = field.querySelector(".field__error");
@@ -96,7 +96,7 @@ function showFieldError(input, message){
     input.ariaInvalid = "true";
 }
 
-function clearFieldError(input){
+function clearFieldError(input) {
     const field = input.closest(".field");
     field.classList.remove("is-invalid");
     const textP = field.querySelector(".field__error");
@@ -108,12 +108,61 @@ function clearFieldError(input){
 // Check a field when the user leaves it (not on every keystroke).
 // But once a field is showing an error, re-check it while they type,
 // so the error disappears the moment it's fixed.
+function checkEmail() {
+    const message = validateEmail(emailInput.value);
+    if (message === "") {
+        clearFieldError(emailInput);
+    }
+    else {
+        showFieldError(emailInput, message);
+    }
+}
 
+emailInput.addEventListener("blur", () => {
+    checkEmail();
+})
+
+emailInput.addEventListener("input", () => {
+    const field = emailInput.closest(".field");
+
+    if (field.classList.contains("is-invalid")) {
+        checkEmail();
+    }
+})
+
+function checkPassword() {
+    const message = validatePassword(passwordInput.value);
+    if (message === "") {
+        clearFieldError(passwordInput);
+    }
+    else {
+        showFieldError(passwordInput, message);
+    }
+}
+
+passwordInput.addEventListener("blur", () => {
+    checkPassword();
+    capsHint.hidden = true;
+})
+
+passwordInput.addEventListener("input", () => {
+    const field = passwordInput.closest(".field");
+
+    if (field.classList.contains("is-invalid")) {
+        checkPassword();
+    }
+})
 
 
 // TODO 6 — Caps Lock warning
 // While typing in the password field, show #caps-hint only when Caps Lock is on.
-
+passwordInput.addEventListener("keyup", (event) => {
+    if (event.getModifierState("CapsLock")) {
+        capsHint.hidden = false;
+    } else {
+        capsHint.hidden = true;
+    }
+})
 
 
 // TODO 7 — Fake backend
