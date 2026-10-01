@@ -115,9 +115,11 @@ function checkEmail() {
     const message = validateEmail(emailInput.value);
     if (message === "") {
         clearFieldError(emailInput);
+        return true;
     }
     else {
         showFieldError(emailInput, message);
+        return false;
     }
 }
 
@@ -137,9 +139,11 @@ function checkPassword() {
     const message = validatePassword(passwordInput.value);
     if (message === "") {
         clearFieldError(passwordInput);
+        return true;
     }
     else {
         showFieldError(passwordInput, message);
+        return false
     }
 }
 
@@ -190,7 +194,32 @@ function fakeLogin(email, password){
 // On submit: stop the page from reloading and validate both fields.
 // If anything is invalid, focus the first invalid field and stop there.
 // Otherwise hide any old #form-alert and go on to TODO 9.
+signInForm.addEventListener("submit", async (event)=>{
+    event.preventDefault();
+    const emailResult = checkEmail();
+    const passwordResult = checkPassword();
+    if(!emailResult){
+        emailInput.focus();
+        return;
+    } else if(!passwordResult){
+        passwordInput.focus();
+        return;
+    }
+    formAlert.hidden = true;
+    submitButton.classList.add("is-loading");
+    submitButton.disabled = true;
 
+    try {
+        const result = await fakeLogin(emailInput.value, passwordInput.value); 
+        console.log(result.token);
+    } catch (error) {
+        formAlertMessage.textContent = error.message;
+        formAlert.hidden = false;
+    } finally {
+        submitButton.classList.remove("is-loading");
+        submitButton.disabled = false;
+    }
+});
 
 
 // TODO 9 — Loading state + "API" call
@@ -224,3 +253,23 @@ function fakeLogin(email, password){
 //   - Keep the button's aria-label accurate ("Switch to dark mode" / "Switch to light mode").
 // Bonus: on reload you may see a quick flash of the wrong theme. Figure out why,
 // and how to prevent it.
+themeToggle.addEventListener("click", () => {
+    const html = document.documentElement;
+
+    // Which theme is showing right now?
+    let currentTheme = html.getAttribute("data-theme");
+    if (currentTheme === null) {
+        // Not set yet → the page is following the system setting
+        const systemIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        currentTheme = systemIsDark ? "dark" : "light";
+    }
+
+    // Flip it
+    if (currentTheme === "dark") {
+        html.setAttribute("data-theme", "light");
+        themeToggle.ariaLabel = "Switch to dark mode";
+    } else {
+        html.setAttribute("data-theme", "dark");
+        themeToggle.ariaLabel = "Switch to light mode";
+    }
+});
