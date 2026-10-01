@@ -42,6 +42,9 @@ const themeToggle = document.getElementById("theme-toggle");
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const testEmail = "test@example.com";
+const testPassword = "password123";
+
 // TODO 2 — Show / hide password
 // Clicking the eye button switches the password between hidden and visible.
 // Keep aria-pressed and aria-label in sync with the current state.
@@ -170,7 +173,17 @@ passwordInput.addEventListener("keyup", (event) => {
 // After ~1 second it should:
 //   - resolve with an object containing a token, for ONE test account you hard-code
 //   - reject with an Error("Invalid email or password") for anything else
-
+function fakeLogin(email, password){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            if(email === testEmail && password === testPassword){
+                resolve({ token: "abc123" });
+            } else {
+                reject(new Error("Invalid email or password"));
+            }
+        }, 1000);
+    });
+};
 
 
 // TODO 8 — Submit
