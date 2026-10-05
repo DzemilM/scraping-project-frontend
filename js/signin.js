@@ -212,6 +212,11 @@ signInForm.addEventListener("submit", async (event)=>{
     try {
         const result = await fakeLogin(emailInput.value, passwordInput.value); 
         console.log(result.token);
+        if(rememberCheckbox.checked){
+            localStorage.setItem("rememberedEmail", emailInput.value);
+        } else {
+            localStorage.removeItem("rememberedEmail");
+        }
     } catch (error) {
         formAlertMessage.textContent = error.message;
         formAlert.hidden = false;
@@ -234,7 +239,11 @@ signInForm.addEventListener("submit", async (event)=>{
 // On a successful sign-in with "Remember me" checked, save the email so it's
 // pre-filled next time the page loads. If it's unchecked, forget any saved email.
 // (Make the page pre-fill the field on load too.)
-
+const rememberedEmail = localStorage.getItem("rememberedEmail");
+if(rememberedEmail !== null){
+    emailInput.value = rememberedEmail;
+    rememberCheckbox.checked = true;
+}
 
 
 // TODO 11 — (later, when the backend is ready) Real request
@@ -267,9 +276,22 @@ themeToggle.addEventListener("click", () => {
     // Flip it
     if (currentTheme === "dark") {
         html.setAttribute("data-theme", "light");
+        localStorage.setItem("theme", "light");
         themeToggle.ariaLabel = "Switch to dark mode";
     } else {
         html.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
         themeToggle.ariaLabel = "Switch to light mode";
     }
 });
+
+const rememberedTheme = localStorage.getItem("theme");
+const html = document.documentElement;
+if(rememberedTheme !== null){
+    html.setAttribute("data-theme", rememberedTheme);
+    if(rememberedTheme === "dark"){
+        themeToggle.setAttribute("aria-label", "Switch to light mode")
+    } else {
+        themeToggle.setAttribute("aria-label", "Switch to dark mode")
+    }
+}
