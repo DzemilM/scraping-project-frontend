@@ -2,7 +2,9 @@ import Brand from '../../components/Brand.jsx'
 import ThemeToggle from '../../components/ThemeToggle.jsx'
 import AuthVisual from './AuthVisual.jsx'
 import './SignIn.css'
-
+import { validateEmail, validatePassword } from '../../utils/validation.js'
+import { fakeLogin } from '../../api/auth.js'
+import { useState } from 'react'
 /**
  * Sign-in page — React version
  * ============================
@@ -26,6 +28,7 @@ import './SignIn.css'
  *   file into src/utils/validation.js, and fakeLogin + the test account into
  *   src/api/auth.js. Make them usable here.
  *
+ * 
  * TODO 2 — Controlled inputs
  *   Keep the email and password in state. The inputs should always show
  *   what's in state, and update it as the user types.
@@ -63,6 +66,13 @@ import './SignIn.css'
  */
 
 export default function SignIn() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
   return (
     <main className="auth">
       <AuthVisual />
@@ -87,7 +97,7 @@ export default function SignIn() {
           </div>
 
           <form noValidate>
-            <div className="field">
+            <div className={`field ${emailErrorMessage && "is-invalid"}`}>
               <label htmlFor="email">Email</label>
               <div className="field__control">
                 <input
@@ -97,12 +107,15 @@ export default function SignIn() {
                   autoComplete="email"
                   placeholder="you@company.com"
                   aria-describedby="email-error"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  aria-invalid={emailErrorMessage !== ""}
                 />
               </div>
-              <p className="field__error" id="email-error" aria-live="polite"></p>
+              <p className="field__error" id="email-error" aria-live="polite">{emailErrorMessage}</p>
             </div>
 
-            <div className="field field--password">
+            <div className={`field field--password ${passwordErrorMessage && "is-invalid"}`}>
               <div className="field__row">
                 <label htmlFor="password">Password</label>
                 <a className="link link--muted" href="#">Forgot password?</a>
@@ -111,12 +124,17 @@ export default function SignIn() {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={isPasswordVisible ? "text" : "password"}
                   autoComplete="current-password"
                   placeholder="••••••••"
                   aria-describedby="password-error caps-hint"
+                  value={password}
+                  onChange={(event)=> setPassword(event.target.value)}
+                  aria-invalid={passwordErrorMessage !== ""}
                 />
-                <button className="field__toggle" type="button" aria-label="Show password" aria-pressed="false">
+                <button className="field__toggle" onClick={()=>setIsPasswordVisible(!isPasswordVisible)} 
+                type="button" aria-label={isPasswordVisible ? "Hide password" : "Show password"} 
+                aria-pressed={isPasswordVisible}>
                   <svg className="icon-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
                     <circle cx="12" cy="12" r="3" />
@@ -135,7 +153,7 @@ export default function SignIn() {
                 </svg>
                 Caps Lock is on
               </p>
-              <p className="field__error" id="password-error" aria-live="polite"></p>
+              <p className="field__error" id="password-error" aria-live="polite">{passwordErrorMessage}</p>
             </div>
 
             <label className="check">
