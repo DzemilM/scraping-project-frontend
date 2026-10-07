@@ -1,0 +1,21 @@
+/* ---------- Theme toggle ---------- */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, transform 0.3s, box-shadow 0.15s;
+}
+.theme-toggle:hover {
+  color: var(--ink);
+  border-color: var(--border-strong);
+  transform: rotate(-15deg);
+}
+.theme-toggle:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--ring); }
+.theme-toggle .icon-moon { display: var(--show-moon); }
+.theme-toggle .icon-sun  { display: var(--show-sun); }

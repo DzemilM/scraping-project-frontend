@@ -1,0 +1,252 @@
+/* =========================================================
+   Left visual panel
+   ========================================================= */
+.auth__visual {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 12px;
+  padding: 40px;
+  border-radius: 24px;
+  background: var(--v-bg);
+  color: var(--v-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+}
+/* dotted grid */
+.auth__visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, transparent 75%);
+          mask-image: radial-gradient(ellipse at 50% 45%, #000 25%, transparent 75%);
+}
+/* lime glow */
+.auth__visual::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 520px;
+  height: 520px;
+  top: -200px;
+  right: -160px;
+  background: radial-gradient(circle, rgba(198, 242, 78, 0.16), transparent 65%);
+  pointer-events: none;
+}
+
+/* ---------- Scene ---------- */
+.scene {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto 36px;
+}
+
+.browser {
+  background: var(--v-surface);
+  border: 1px solid var(--v-line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
+}
+.browser__bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--v-line);
+}
+.browser__bar .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+}
+.browser__url {
+  flex: 1;
+  min-width: 0;
+  margin-left: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--v-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.browser__body {
+  position: relative;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.p-card {
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.025);
+  animation: extract 6s var(--d, 0s) infinite both;
+}
+.p-card__img {
+  aspect-ratio: 16 / 10;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: var(--v-block);
+}
+.line {
+  height: 7px;
+  margin-bottom: 6px;
+  border-radius: 4px;
+  background: var(--v-block);
+}
+.line--title { width: 80%; }
+.line--short { width: 50%; }
+.p-card__price {
+  width: 34%;
+  height: 9px;
+  margin-top: 10px;
+  border-radius: 4px;
+  background: rgba(198, 242, 78, 0.28);
+}
+/* "extracted" tick */
+.p-card::after {
+  content: "✓";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #121310;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  animation: tick 6s var(--d, 0s) infinite both;
+}
+
+.scanline {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 70px;
+  margin-top: -70px;
+  background: linear-gradient(to bottom, transparent, rgba(198, 242, 78, 0.12));
+  border-bottom: 1px solid var(--accent);
+  box-shadow: 0 1px 14px rgba(198, 242, 78, 0.55);
+  pointer-events: none;
+  animation: scan 6s linear infinite;
+}
+
+/* ---------- JSON output card ---------- */
+.output {
+  position: absolute;
+  right: -20px;
+  bottom: -36px;
+  width: 64%;
+  padding: 12px 14px;
+  border: 1px solid var(--v-line);
+  border-radius: 12px;
+  background: rgba(14, 15, 12, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7);
+}
+.output__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--v-muted);
+}
+.pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(198, 242, 78, 0.6);
+  animation: pulse 1.6s ease-out infinite;
+}
+.output__code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.7;
+  overflow: hidden;
+}
+.ln {
+  white-space: pre;
+  animation: line-in 6s calc(var(--i) * 0.3s + 0.9s) infinite both;
+}
+.output__code .p { color: var(--v-muted); }
+.output__code .k { color: #a9b0a0; }
+.output__code .s { color: var(--v-text); }
+.output__code .n { color: var(--accent); }
+
+/* ---------- Copy ---------- */
+.visual__copy h2 {
+  max-width: 16ch;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(26px, 2.4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.visual__copy .hl { color: var(--accent); }
+.visual__copy p {
+  max-width: 40ch;
+  margin: 0;
+  font-size: 15px;
+  color: var(--v-muted);
+}
+
+/* ---------- Animations ---------- */
+@keyframes scan {
+  0%        { top: 0;    opacity: 0; }
+  4%, 46%   { opacity: 1; }
+  50%, 100% { top: 100%; opacity: 0; }
+}
+@keyframes extract {
+  0%, 72%, 100% { border-color: transparent; background: rgba(255, 255, 255, 0.025); }
+  6%, 62%       { border-color: rgba(198, 242, 78, 0.55); background: rgba(198, 242, 78, 0.05); }
+}
+@keyframes tick {
+  0%, 72%, 100% { opacity: 0; transform: scale(0.5); }
+  6%, 62%       { opacity: 1; transform: scale(1); }
+}
+@keyframes line-in {
+  0%        { opacity: 0; transform: translateY(3px); }
+  5%, 78%   { opacity: 1; transform: none; }
+  86%, 100% { opacity: 0; }
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(198, 242, 78, 0.6); }
+  100% { box-shadow: 0 0 0 8px rgba(198, 242, 78, 0); }
+}
+
+/* Reduced motion — show the "finished" state, no looping */
+@media (prefers-reduced-motion: reduce) {
+  .scanline { display: none; }
+  .p-card { animation: none; border-color: rgba(198, 242, 78, 0.55); }
+  .p-card::after,
+  .ln,
+  .pulse { animation: none; }
+}
