@@ -66,6 +66,27 @@ togglePassword.addEventListener("click", () => {
 // Each returns an error message string, or "" if the value is fine.
 //   Email:    required, and must look like an email
 //   Password: required, at least 8 characters
+function validateEmail(value) {
+    const trimmedVal = value.trim();
+
+    if (trimmedVal.length === 0) {
+        return "Email is required";
+    } else if (!EMAIL_PATTERN.test(trimmedVal)) {
+        return "Invalid email";
+    } else {
+        return "";
+    }
+}
+
+function validatePassword(value) {
+    if (value.length === 0) {
+        return "Password is required";
+    } else if (value.length < 8) {
+        return "Password needs to have at least 8 characters";
+    } else {
+        return "";
+    }
+}
 
 // TODO 4 — Show / clear a field error
 // Write showFieldError(input, message) and clearFieldError(input).
@@ -156,7 +177,17 @@ passwordInput.addEventListener("keyup", (event) => {
 // After ~1 second it should:
 //   - resolve with an object containing a token, for ONE test account you hard-code
 //   - reject with an Error("Invalid email or password") for anything else
-
+function fakeLogin(email, password){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            if(email === testEmail && password === testPassword){
+                resolve({ token: "abc123" });
+            } else {
+                reject(new Error("Invalid email or password"));
+            }
+        }, 1000);
+    });
+};
 
 
 // TODO 8 — Submit
