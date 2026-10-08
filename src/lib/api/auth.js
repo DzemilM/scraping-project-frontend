@@ -1,5 +1,5 @@
-// TODO 1 — fakeLogin and the test account go here.
-// Later (when the backend is ready) this file will hold the real login request.
+// Login requests. For now it fakes the backend.
+// When the real API is ready, the real request goes here (TODO 11 from the legacy version).
 const testEmail = "test@example.com";
 const testPassword = "password123";
 

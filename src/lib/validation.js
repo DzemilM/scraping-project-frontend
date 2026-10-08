@@ -1,4 +1,4 @@
-// TODO 1 — validateEmail, validatePassword and EMAIL_PATTERN go here.
+// Validation rules for the sign-in form.
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function validateEmail(value) {
