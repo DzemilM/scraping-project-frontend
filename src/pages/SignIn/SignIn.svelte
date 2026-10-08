@@ -4,6 +4,10 @@
   import AuthVisual from './AuthVisual.svelte'
   import './SignIn.css'
 
+  import { validateEmail, validatePassword } from '../../lib/validation';
+  import { fakeLogin } from '../../lib/api/auth';
+
+  
   /**
    * Sign-in page — Svelte version
    * =============================
@@ -29,7 +33,6 @@
    * TODO 2 — State for the inputs
    *   Keep the email and password in state, connected to their inputs, so
    *   state and input always match.
-   *
    * TODO 3 — Show / hide password
    *   The eye button toggles visibility. The input type, aria-pressed and
    *   aria-label all follow one piece of state.
@@ -60,6 +63,22 @@
    *   Flip between light and dark starting from what the user sees, keep the
    *   aria-label right, remember the choice, and restore it on load.
    */
+  let email = $state("");
+  let password = $state("");
+  let isPasswordVisible = $state(false);
+  let emailError = $state("");
+  let passwordError = $state("");
+
+  function checkEmail(){
+    emailError = validateEmail(email);
+  }
+
+  function checkPassword(){
+    passwordError = validatePassword(password);
+  }
+
+  let isCapsLockOn = $state(false);
+
 </script>
 
 <main class="auth">
@@ -85,7 +104,7 @@
       </div>
 
       <form novalidate>
-        <div class="field">
+        <div class="field" class:is-invalid={emailError.length > 0}>
           <label for="email">Email</label>
           <div class="field__control">
             <input
@@ -95,12 +114,21 @@
               autocomplete="email"
               placeholder="you@company.com"
               aria-describedby="email-error"
+              bind:value={email}
+              aria-invalid={emailError.length > 0}
+              onblur={checkEmail}
+              oninput={()=>{
+                if(emailError.length > 0){
+                  checkEmail();
+                }
+              }}
             />
           </div>
-          <p class="field__error" id="email-error" aria-live="polite"></p>
+          <p class="field__error" id="email-error" aria-live="polite">{emailError}</p>
         </div>
 
-        <div class="field field--password">
+        <div class="field field--password" 
+             class:is-invalid={passwordError.length > 0}>
           <div class="field__row">
             <label for="password">Password</label>
             <a class="link link--muted" href="/forgot-password">Forgot password?</a>
@@ -109,12 +137,31 @@
             <input
               id="password"
               name="password"
-              type="password"
+              type={isPasswordVisible ? "text" : "password"}
               autocomplete="current-password"
               placeholder="••••••••"
               aria-describedby="password-error caps-hint"
+              bind:value={password}
+              aria-invalid={passwordError.length > 0}
+              onblur={()=>{
+                isCapsLockOn = false;
+                checkPassword();
+                }}
+              oninput={()=>{
+                if(passwordError.length > 0){
+                  checkPassword();
+                }
+              }}
+              onkeyup={(event)=>{
+                isCapsLockOn = event.getModifierState("CapsLock");
+              }}
             />
-            <button class="field__toggle" type="button" aria-label="Show password" aria-pressed="false">
+            <button 
+            class="field__toggle" 
+            type="button" 
+            aria-label={`${isPasswordVisible ? "Hide" : "Show"} password`} 
+            aria-pressed={isPasswordVisible} 
+            onclick={()=>isPasswordVisible = !isPasswordVisible}>
               <svg class="icon-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
                 <circle cx="12" cy="12" r="3" />
@@ -127,13 +174,13 @@
               </svg>
             </button>
           </div>
-          <p class="field__hint" id="caps-hint" hidden>
+          <p class="field__hint" id="caps-hint" hidden={!isCapsLockOn}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 4 4 12h4v6h8v-6h4z" />
             </svg>
             Caps Lock is on
           </p>
-          <p class="field__error" id="password-error" aria-live="polite"></p>
+          <p class="field__error" id="password-error" aria-live="polite">{passwordError}</p>
         </div>
 
         <label class="check">
