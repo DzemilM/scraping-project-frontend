@@ -1,12 +1,16 @@
 <script>
   import './ThemeToggle.css'
 
+  const savedTheme = localStorage.getItem("theme");
+  let theme = $state(savedTheme ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
   // Light / dark switch, shared so every page can use it.
   //
   // TODO 10 — Theme toggle (see the list in pages/SignIn/SignIn.svelte)
 </script>
 
-<button class="theme-toggle" type="button" aria-label="Switch theme">
+<button class="theme-toggle" type="button" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} 
+onclick={()=>{theme === "dark" ? theme = "light" : theme = "dark"}}>
   <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
     <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
   </svg>

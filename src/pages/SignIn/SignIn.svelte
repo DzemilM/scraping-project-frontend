@@ -63,11 +63,18 @@
    *   Flip between light and dark starting from what the user sees, keep the
    *   aria-label right, remember the choice, and restore it on load.
    */
-  let email = $state("");
+  const savedEmail = localStorage.getItem("email");
+  let email = $state(savedEmail === null ? "" : savedEmail);
   let password = $state("");
   let isPasswordVisible = $state(false);
   let emailError = $state("");
   let passwordError = $state("");
+  let formError = $state("");
+  let isCapsLockOn = $state(false);
+  let emailInput;
+  let passwordInput;
+  let isLoading = $state(false);
+  let rememberMe = $state(savedEmail !== null);
 
   function checkEmail(){
     emailError = validateEmail(email);
@@ -77,7 +84,35 @@
     passwordError = validatePassword(password);
   }
 
-  let isCapsLockOn = $state(false);
+  async function handleSubmit(event){
+    event.preventDefault();
+    checkEmail();
+    checkPassword();
+    if(emailError.length > 0){
+      emailInput.focus();
+      return;
+    } else if(passwordError.length > 0){
+      passwordInput.focus();
+      return;
+    }
+
+    formError = "";
+    isLoading = true;
+
+    try {
+      const result = await fakeLogin(email, password);
+      console.log(result.token);
+      if(rememberMe){
+        localStorage.setItem("email", email);
+      } else {
+        localStorage.removeItem("email");
+      }
+    } catch (error) {
+      formError = error.message;
+    } finally {
+      isLoading = false;
+    }
+  }
 
 </script>
 
@@ -95,15 +130,15 @@
       <p class="subtitle">Sign in to your workspace.</p>
 
       <!-- Form-level error (e.g. wrong password) -->
-      <div class="form-alert" role="alert" hidden>
+      <div class="form-alert" role="alert" hidden={!formError}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <circle cx="12" cy="12" r="9" />
           <path d="M12 8v4.5M12 16h.01" />
         </svg>
-        <span></span>
+        <span>{formError}</span>
       </div>
 
-      <form novalidate>
+      <form novalidate onsubmit={handleSubmit}>
         <div class="field" class:is-invalid={emailError.length > 0}>
           <label for="email">Email</label>
           <div class="field__control">
@@ -122,6 +157,7 @@
                   checkEmail();
                 }
               }}
+              bind:this={emailInput}
             />
           </div>
           <p class="field__error" id="email-error" aria-live="polite">{emailError}</p>
@@ -155,6 +191,7 @@
               onkeyup={(event)=>{
                 isCapsLockOn = event.getModifierState("CapsLock");
               }}
+              bind:this={passwordInput}
             />
             <button 
             class="field__toggle" 
@@ -184,7 +221,7 @@
         </div>
 
         <label class="check">
-          <input type="checkbox" name="remember" />
+          <input bind:checked={rememberMe} type="checkbox" name="remember" />
           <span class="check__box">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12.5l4.5 4.5L19 7.5" />
@@ -193,7 +230,7 @@
           Remember me
         </label>
 
-        <button class="btn btn--primary" type="submit">
+        <button class="btn btn--primary" class:is-loading={isLoading} type="submit" disabled={isLoading}>
           <span class="btn__label">
             Sign in
             <svg class="btn__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
