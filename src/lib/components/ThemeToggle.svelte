@@ -4,6 +4,10 @@
   const savedTheme = localStorage.getItem("theme");
   let theme = $state(savedTheme ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
 
+  $effect(()=>{
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme)
+  })
   // Light / dark switch, shared so every page can use it.
   //
   // TODO 10 — Theme toggle (see the list in pages/SignIn/SignIn.svelte)
