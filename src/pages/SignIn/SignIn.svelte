@@ -5,7 +5,7 @@
   import './SignIn.css'
 
   import { validateEmail, validatePassword } from '../../lib/validation';
-  import { fakeLogin } from '../../lib/api/auth';
+  import { login } from '../../lib/api/auth';
 
   
   /**
@@ -100,8 +100,8 @@
     isLoading = true;
 
     try {
-      const result = await fakeLogin(email, password);
-      console.log(result.token);
+      const result = await login(email, password);
+      localStorage.setItem("accessToken", result.access_token);
       if(rememberMe){
         localStorage.setItem("email", email);
       } else {
