@@ -8,53 +8,6 @@
   import { login } from '../../lib/api/auth';
 
   
-  /**
-   * Sign-in page — Svelte version
-   * =============================
-   * Same features you built in legacy/js/signin.js, rebuilt the Svelte way.
-   *
-   * The big idea: you DON'T grab elements and change them. You keep data in
-   * STATE (variables made with $state), use them in the HTML below, and Svelte
-   * updates the page whenever they change.
-   *
-   * The CSS is unchanged, so the same hooks still apply:
-   *   .field + "is-invalid"        → red border + error text shows
-   *   .field__toggle aria-pressed  → swaps the eye icon
-   *   .btn + "is-loading"          → spinner
-   *   `hidden` attribute           → hides the caps hint / form alert
-   *
-   * Work through the TODOs in order. Ask for a lesson whenever a TODO needs
-   * something new. You don't need to know Svelte yet, we'll learn it as we go.
-   *
-   * TODO 2 — State for the inputs
-   *   Keep the email and password in state, connected to their inputs, so
-   *   state and input always match.
-   * TODO 3 — Show / hide password
-   *   The eye button toggles visibility. The input type, aria-pressed and
-   *   aria-label all follow one piece of state.
-   *
-   * TODO 4 — Field errors
-   *   Keep each field's error message in state. The .field class, the error
-   *   text and aria-invalid all come from that state.
-   *
-   * TODO 5 — Live validation
-   *   Check when the user leaves a field, and re-check while typing once an
-   *   error is showing.
-   *
-   * TODO 6 — Caps Lock warning
-   *   Show the hint while typing in the password with Caps Lock on, hide it on leave.
-   *
-   * TODO 7 — Submit
-   *   No page reload, validate both fields, focus the first invalid one.
-   *
-   * TODO 9 — Remember me
-   *   The checkbox is in state. Save / forget the email after a successful
-   *   sign-in, and pre-fill both when the page opens.
-   *
-   * TODO 10 — Theme toggle (in lib/components/ThemeToggle.svelte)
-   *   Flip between light and dark starting from what the user sees, keep the
-   *   aria-label right, remember the choice, and restore it on load.
-   */
   const savedEmail = localStorage.getItem("email");
   let email = $state(savedEmail === null ? "" : savedEmail);
   let password = $state("");
@@ -93,6 +46,9 @@
 
     try {
       const result = await login(email, password);
+      if (!result.access_token) {
+        throw new Error("Login response did not include an access token");
+      }
       localStorage.setItem("accessToken", result.access_token);
       if(rememberMe){
         localStorage.setItem("email", email);
