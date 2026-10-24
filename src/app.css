@@ -17,6 +17,8 @@
 
   --danger: #d1322b;
   --danger-bg: #fdf0ef;
+  --success: #287a3d;
+  --success-bg: #eef9ef;
   --ring: rgba(150, 200, 30, 0.45);
 
   --radius: 12px;
@@ -53,6 +55,8 @@
     --primary-hover: #d6fa6e;
     --danger: #ff6b5e;
     --danger-bg: rgba(255, 107, 94, 0.1);
+    --success: #8bd99a;
+    --success-bg: rgba(139, 217, 154, 0.1);
     --ring: rgba(198, 242, 78, 0.3);
     --v-bg: #161812;
     --show-moon: none;
@@ -74,6 +78,8 @@
   --primary-hover: #d6fa6e;
   --danger: #ff6b5e;
   --danger-bg: rgba(255, 107, 94, 0.1);
+  --success: #8bd99a;
+  --success-bg: rgba(139, 217, 154, 0.1);
   --ring: rgba(198, 242, 78, 0.3);
   --v-bg: #161812;
   --show-moon: none;

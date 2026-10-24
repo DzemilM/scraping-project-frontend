@@ -1,7 +1,12 @@
 <script>
   import SignIn from './pages/SignIn/SignIn.svelte'
+  import SignUp from './pages/SignUp/SignUp.svelte'
 
-  // Only one page for now. When more pages come, routing goes here.
+  const page = window.location.pathname
 </script>
 
-<SignIn />
+{#if page === '/signup'}
+  <SignUp />
+{:else}
+  <SignIn />
+{/if}

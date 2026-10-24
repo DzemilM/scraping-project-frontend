@@ -59,6 +59,11 @@
   animation: shake 0.35s ease;
 }
 .form-alert svg { margin-top: 1px; }
+.form-alert--success {
+  border-color: color-mix(in srgb, var(--success) 25%, transparent);
+  background: var(--success-bg);
+  color: var(--success);
+}
 
 /* ---------- Fields ---------- */
 .field { margin-bottom: 18px; }
