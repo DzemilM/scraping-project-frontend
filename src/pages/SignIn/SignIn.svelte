@@ -26,10 +26,6 @@
    * Work through the TODOs in order. Ask for a lesson whenever a TODO needs
    * something new. You don't need to know Svelte yet, we'll learn it as we go.
    *
-   * TODO 1 — Import your helpers
-   *   Your validation functions and fakeLogin are already in src/lib/
-   *   (validation.js and api/auth.js). Make them usable in this file.
-   *
    * TODO 2 — State for the inputs
    *   Keep the email and password in state, connected to their inputs, so
    *   state and input always match.
@@ -50,10 +46,6 @@
    *
    * TODO 7 — Submit
    *   No page reload, validate both fields, focus the first invalid one.
-   *
-   * TODO 8 — Loading + result
-   *   Spinner and disabled button while waiting, red alert on failure,
-   *   log the token on success. Always restore the button.
    *
    * TODO 9 — Remember me
    *   The checkbox is in state. Save / forget the email after a successful
