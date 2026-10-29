@@ -55,6 +55,7 @@
       } else {
         localStorage.removeItem("email");
       }
+      
       window.location.href = "/scraper";
 
     } catch (error) {

@@ -12,6 +12,7 @@ export async function scrape(url, format, token) {
   }
 
   const type = response.headers.get("content-type");
+  
   if(type.includes("json")) {
     return await response.json();
   } else {
