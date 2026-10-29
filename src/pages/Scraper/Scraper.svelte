@@ -17,18 +17,10 @@
   let isLoading = $state(false);
   let formError = $state("");
   let view = $state("preview"); // "preview" | "raw"
-  let scrapedUrl = $state("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html");
+  let scrapedUrl = $state("");
 
-  // The backend's answer: an object for JSON, a string for HTML.
-  // Sample data so you can see the design. Replace with $state(null) once connected.
-  // To see the HTML view, swap in: $state("<h1>Hello</h1><p>Scraped page here</p>")
-  let result = $state({
-    title: "A Light in the Attic",
-    UPC: "a897fe39b1053632",
-    price: "51.77",
-    tax: "0.00",
-    in_stock: "In stock (22 available)"
-  });
+  // The backend's answer: an object for JSON, a string for HTML, null before the first scrape.
+  let result = $state(null);
 
   // $derived = a value Svelte recalculates whenever `result` changes.
   let isHtml = $derived(typeof result === "string");
@@ -36,18 +28,7 @@
   // <base> makes the page's relative images/CSS load from the real site.
   let htmlPreview = $derived(isHtml ? `<base href="${scrapedUrl}">${result}` : "");
 
-  // TODO 1 — In src/lib/api/scraper.js, write scrape(url, format, token).
-  //          GET http://localhost:8000/scrape?url=...&output=json (or html)
-  //          with the header Authorization: Bearer <token>.
-  //          Check response.ok like in auth.js.
-  //          The backend may send HTML even when you asked for JSON (sites
-  //          without a parser), so look at response.headers.get("content-type"):
-  //          JSON → response.json(), HTML → response.text().
-  //          Hint: encodeURIComponent(url) keeps the "?" and "&" inside the url safe.
-  //
-  // TODO 2 — handleSubmit: stop the page reload, read "accessToken" from
-  //          localStorage, call scrape(), then set result + scrapedUrl.
-  //          Use isLoading and formError the same way SignIn does.
+  // DONE: TODO 1 (scrape() helper), TODO 2 (handleSubmit), TODO 8 (sign-in → /scraper)
   //
   // TODO 3 — No token? Send the user to "/" instead of calling the backend.
   //
@@ -60,8 +41,6 @@
   //
   // TODO 7 — Copy button: copy rawText to the clipboard.
   //          Hint: navigator.clipboard.writeText(...)
-  //
-  // TODO 8 — In SignIn.svelte, go to "/scraper" after a successful login.
 
   async function handleSubmit(event){
 
