@@ -40,10 +40,14 @@
     isLoading = true;
 
     try {
-      await signup(email, password);
-      successMessage = "Account created successfully. You can now sign in.";
+      const result = await signup(email, password);
+      if (!result.access_token) {
+        throw new Error("Signup response did not include an access token");
+      }
+      localStorage.setItem("accessToken", result.access_token);
+      successMessage = "Account created! Taking you to the scraper…";
       window.setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/scraper";
       }, 1200);
     } catch (error) {
       formError = error.message;
