@@ -12,12 +12,15 @@
   ];
 
   let url = $state("");
+  let format = $state("json"); // what the user asks for: "json" | "html"
   let isLoading = $state(false);
   let formError = $state("");
-  let view = $state("preview"); // "preview" | "json"
+  let view = $state("preview"); // "preview" | "raw"
   let scrapedUrl = $state("https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html");
 
+  // The backend's answer: an object for JSON, a string for HTML.
   // Sample data so you can see the design. Replace with $state(null) once connected.
+  // To see the HTML view, swap in: $state("<h1>Hello</h1><p>Scraped page here</p>")
   let result = $state({
     title: "A Light in the Attic",
     UPC: "a897fe39b1053632",
@@ -26,9 +29,19 @@
     in_stock: "In stock (22 available)"
   });
 
-  // TODO 1 — In src/lib/api/scraper.js, write scrape(url, token).
-  //          GET http://localhost:8000/scrape?url=... with the header
-  //          Authorization: Bearer <token>. Check response.ok like in auth.js.
+  // $derived = a value Svelte recalculates whenever `result` changes.
+  let isHtml = $derived(typeof result === "string");
+  let rawText = $derived(isHtml ? result : JSON.stringify(result, null, 2));
+  // <base> makes the page's relative images/CSS load from the real site.
+  let htmlPreview = $derived(isHtml ? `<base href="${scrapedUrl}">${result}` : "");
+
+  // TODO 1 — In src/lib/api/scraper.js, write scrape(url, format, token).
+  //          GET http://localhost:8000/scrape?url=...&output=json (or html)
+  //          with the header Authorization: Bearer <token>.
+  //          Check response.ok like in auth.js.
+  //          The backend may send HTML even when you asked for JSON (sites
+  //          without a parser), so look at response.headers.get("content-type"):
+  //          JSON → response.json(), HTML → response.text().
   //          Hint: encodeURIComponent(url) keeps the "?" and "&" inside the url safe.
   //
   // TODO 2 — handleSubmit: stop the page reload, read "accessToken" from
@@ -44,7 +57,7 @@
   //
   // TODO 6 — Example chips: clicking one fills the input with its url.
   //
-  // TODO 7 — Copy button: copy the JSON text to the clipboard.
+  // TODO 7 — Copy button: copy rawText to the clipboard.
   //          Hint: navigator.clipboard.writeText(...)
   //
   // TODO 8 — In SignIn.svelte, go to "/scraper" after a successful login.
@@ -81,7 +94,7 @@
   <main class="app__main">
     <section class="hero">
       <h1>Scrape any page</h1>
-      <p class="subtitle">Paste a link and get structured data back — readable or raw JSON.</p>
+      <p class="subtitle">Paste a link and get structured data or the full page back.</p>
 
       <form class="url-bar" class:is-invalid={formError.length > 0} novalidate onsubmit={handleSubmit}>
         <svg class="url-bar__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -110,11 +123,21 @@
         </button>
       </form>
 
-      <div class="examples">
-        <span>Try:</span>
-        {#each examples as example}
-          <button class="chip" type="button">{example.label}</button>
-        {/each}
+      <div class="hero__options">
+        <div class="examples">
+          <span>Try:</span>
+          {#each examples as example}
+            <button class="chip" type="button">{example.label}</button>
+          {/each}
+        </div>
+
+        <div class="format">
+          <span id="format-label">Output</span>
+          <div class="segmented" role="group" aria-labelledby="format-label">
+            <button type="button" aria-pressed={format === "json"} onclick={() => format = "json"}>JSON</button>
+            <button type="button" aria-pressed={format === "html"} onclick={() => format = "html"}>HTML</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -142,16 +165,16 @@
       <section class="result">
         <div class="result__head">
           <div class="result__source">
-            <span class="result__dot" aria-hidden="true"></span>
+            <span class="badge">{isHtml ? "HTML" : "JSON"}</span>
             <a href={scrapedUrl} target="_blank" rel="noreferrer">{scrapedUrl}</a>
           </div>
 
           <div class="result__tools">
             <div class="tabs" role="tablist" aria-label="Result view">
               <button role="tab" type="button" aria-selected={view === "preview"} onclick={() => view = "preview"}>Preview</button>
-              <button role="tab" type="button" aria-selected={view === "json"} onclick={() => view = "json"}>JSON</button>
+              <button role="tab" type="button" aria-selected={view === "raw"} onclick={() => view = "raw"}>{isHtml ? "Code" : "JSON"}</button>
             </div>
-            <button class="icon-btn" type="button" aria-label="Copy JSON">
+            <button class="icon-btn" type="button" aria-label={isHtml ? "Copy HTML" : "Copy JSON"}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="12" height="12" rx="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
@@ -160,8 +183,21 @@
           </div>
         </div>
 
+        {#if isHtml && format === "json"}
+          <p class="result__note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 11v5M12 8h.01" />
+            </svg>
+            No structured data for this site yet, so here's the full page instead.
+          </p>
+        {/if}
+
         <div class="result__body">
-          {#if view === "preview"}
+          {#if view === "preview" && isHtml}
+            <!-- sandbox="" blocks the scraped page's scripts, forms and popups -->
+            <iframe class="page-frame" title="Scraped page preview" sandbox="" srcdoc={htmlPreview}></iframe>
+          {:else if view === "preview"}
             <dl class="preview">
               {#each Object.entries(result) as [key, value]}
                 <div class="preview__row" class:preview__row--long={isLong(value)}>
@@ -171,7 +207,7 @@
               {/each}
             </dl>
           {:else}
-            <pre class="json"><code>{JSON.stringify(result, null, 2)}</code></pre>
+            <pre class="code"><code>{rawText}</code></pre>
           {/if}
         </div>
       </section>
