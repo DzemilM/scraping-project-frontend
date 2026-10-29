@@ -3,6 +3,7 @@
   import ThemeToggle from '../../lib/components/ThemeToggle.svelte'
   import '../SignIn/SignIn.css'
   import './Scraper.css'
+  import { scrape } from '../../lib/api/scraper';
 
   // Sites the backend has a custom parser for — shown as quick-fill chips.
   const examples = [
@@ -64,6 +65,9 @@
 
   async function handleSubmit(event){
     event.preventDefault();
+    const token = localStorage.getItem("accessToken");
+    result = await scrape(url, format, token);
+    scrapedUrl = url;
   }
 
   // Turns "in_stock" / "countryOfOrigin" into "In stock" / "Country of origin".
