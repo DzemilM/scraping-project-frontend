@@ -64,10 +64,23 @@
   // TODO 8 — In SignIn.svelte, go to "/scraper" after a successful login.
 
   async function handleSubmit(event){
+
     event.preventDefault();
     const token = localStorage.getItem("accessToken");
-    result = await scrape(url, format, token);
-    scrapedUrl = url;
+
+    formError = "";
+    isLoading = true;
+
+    try {
+      result = await scrape(url, format, token);
+      scrapedUrl = url;
+    } catch(error) {
+      formError = error.message;
+    } finally {
+      isLoading = false;
+    }
+  
+    
   }
 
   // Turns "in_stock" / "countryOfOrigin" into "In stock" / "Country of origin".
