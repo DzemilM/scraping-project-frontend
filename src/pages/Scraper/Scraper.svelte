@@ -29,10 +29,7 @@
   let htmlPreview = $derived(isHtml ? `<base href="${scrapedUrl}">${result}` : "");
 
   // DONE: TODO 1 (scrape() helper), TODO 2 (handleSubmit), TODO 3 (no token → "/"),
-  //       TODO 8 (sign-in → /scraper)
-  //
-  // TODO 4 — Got a 401 back (token expired after 30 min)? Remove the token
-  //          and send the user to "/".
+  //       TODO 4 (401 → "/"), TODO 8 (sign-in → /scraper)
   //
   // TODO 5 — Log out button: remove the token, go to "/".
   //

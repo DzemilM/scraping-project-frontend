@@ -7,6 +7,12 @@ export async function scrape(url, format, token) {
   });
 
   if (!response.ok) {
+    
+    if(response.status === 401) {
+      localStorage.removeItem("accessToken");
+      window.location.href = "/";
+    }
+
     const result = await response.json();
     throw new Error(result.detail || "Scrape failed");  
   }
