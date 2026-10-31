@@ -28,16 +28,6 @@
   // <base> makes the page's relative images/CSS load from the real site.
   let htmlPreview = $derived(isHtml ? `<base href="${scrapedUrl}">${result}` : "");
 
-  // DONE: TODO 1 (scrape() helper), TODO 2 (handleSubmit), TODO 3 (no token → "/"),
-  //       TODO 4 (401 → "/"), TODO 8 (sign-in → /scraper)
-  //
-  // TODO 5 — Log out button: remove the token, go to "/".
-  //
-  // TODO 6 — Example chips: clicking one fills the input with its url.
-  //
-  // TODO 7 — Copy button: copy rawText to the clipboard.
-  //          Hint: navigator.clipboard.writeText(...)
-
   async function handleSubmit(event){
 
     event.preventDefault();
@@ -63,6 +53,11 @@
     
   }
 
+  function logout(){
+      localStorage.removeItem("accessToken");
+      window.location.href = "/";
+  }
+
   // Turns "in_stock" / "countryOfOrigin" into "In stock" / "Country of origin".
   function prettyKey(key){
     const words = key.replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
@@ -79,7 +74,7 @@
     <Brand />
     <div class="app__actions">
       <ThemeToggle />
-      <button class="logout" type="button">
+      <button class="logout" onclick={logout} type="button">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
         </svg>
@@ -124,7 +119,9 @@
         <div class="examples">
           <span>Try:</span>
           {#each examples as example}
-            <button class="chip" type="button">{example.label}</button>
+            <button class="chip" type="button" onclick={() => url = example.url}>
+              {example.label}
+            </button>
           {/each}
         </div>
 
@@ -171,7 +168,11 @@
               <button role="tab" type="button" aria-selected={view === "preview"} onclick={() => view = "preview"}>Preview</button>
               <button role="tab" type="button" aria-selected={view === "raw"} onclick={() => view = "raw"}>{isHtml ? "Code" : "JSON"}</button>
             </div>
-            <button class="icon-btn" type="button" aria-label={isHtml ? "Copy HTML" : "Copy JSON"}>
+            <button 
+              class="icon-btn" 
+              onclick={() => navigator.clipboard.writeText(rawText)}
+              type="button" 
+              aria-label={isHtml ? "Copy HTML" : "Copy JSON"}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="12" height="12" rx="2" />
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
