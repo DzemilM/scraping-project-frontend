@@ -28,9 +28,8 @@
   // <base> makes the page's relative images/CSS load from the real site.
   let htmlPreview = $derived(isHtml ? `<base href="${scrapedUrl}">${result}` : "");
 
-  // DONE: TODO 1 (scrape() helper), TODO 2 (handleSubmit), TODO 8 (sign-in → /scraper)
-  //
-  // TODO 3 — No token? Send the user to "/" instead of calling the backend.
+  // DONE: TODO 1 (scrape() helper), TODO 2 (handleSubmit), TODO 3 (no token → "/"),
+  //       TODO 8 (sign-in → /scraper)
   //
   // TODO 4 — Got a 401 back (token expired after 30 min)? Remove the token
   //          and send the user to "/".
@@ -46,6 +45,11 @@
 
     event.preventDefault();
     const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+      window.location.href = "/";
+      return;
+    }
 
     formError = "";
     isLoading = true;
